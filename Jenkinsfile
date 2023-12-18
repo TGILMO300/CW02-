@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Customize these environment variables
-        DOCKER_IMAGE_NAME = "tgilmo300/cw02:2.0"
+        DOCKER_IMAGE_NAME = "tgilmo300/cw02:1.0"
         DOCKERFILE_PATH = "/home/ubuntu/Dockerfile"
         DOCKERHUB_CREDENTIAL_ID = "e3af4e42-a94c-4505-a718-2527b65c43c2"
     }

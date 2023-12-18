@@ -1,67 +1,54 @@
-pipeline {
-    agent any
+node {
+    def app
+	
+	stage('Clone repsitory'){
+	     checkout scm
+	}
+	
+	stage('Build image') { 
+	   app = docker.build("tgilmour300/cw02:1.0")
+	}
 
-    environment {
-        // Customize these environment variables
-        DOCKER_IMAGE_NAME = "tgilmo300/cw02:1.0"
-        DOCKERFILE_PATH = "/home/ubuntu/Dockerfile"
-        DOCKERHUB_CREDENTIAL_ID = "e3af4e42-a94c-4505-a718-2527b65c43c2"
-    }
-
-    stages {
-        
-
-        stage('Build Docker Image') {
-            steps {
-                // Build a Docker image from the Dockerfile
-                script {
-                    docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}", "${DOCKERFILE_PATH}")
-                }
-            }
-        }
-
-        stage('Test Container Launch') {
-            steps {
-                // Test that a container can be launched from the built image
-                script {
-                    docker.withRun("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}", "--name test-container") {
-                        // Run a command inside the container to ensure it has launched successfully
-                        sh 'echo "Container launched successfully"'
-                    }
-                }
-            }
-        }
-
-        stage('Push to DockerHub') {
-            steps {
-                // Push the Docker image to DockerHub
-                script {
-                    docker.withRegistry('https://hub.docker.com/repository/docker/tgilmo300/cw02/general', DOCKERHUB_CREDENTIAL_ID) {
-                        docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push()
-                    }
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            // You can customize this stage based on your specific deployment needs
-            steps {
-                script {
-                    // Perform deployment to Kubernetes without using a Kubernetes config (customize as needed)
-                    sh 'kubectl apply -f /home/ubuntu/ansible/kubernetes-manifest.yml'
-                }
-            }
-        }
-    }
-
-
-
-    post {
-        always {
-            // Cleanup: Remove the local Docker image created during the build
-            script {
-                docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").remove()
-            }
-        }
-    }
+	
+	stage('Test image') {
+	app.inside{
+	sh 'echo "Tests passed"'
+	    }
+	}
+	
+	stage('Run Container') {
+	script{
+	def containerid = docker.image("tgilmo300/cw02:1.0").run("-d -p 8081:8080").id
+	 
+	 try{
+	    sh 'docker ps'
+		sh "docker rm -f --volumes $(containerid)"
+		}
+	}
 }
+
+
+     stage('Push image') {
+	 script {
+	     docker.withRegistery('https://registry.hub.docker.com', docker-hub-credentials'){
+		    
+			
+			def imageTag = "$(env.BUILD_NUMBER)"
+			app.push(imageTag)
+			
+			echo "Docker image pushed to tgilmo300/cw02:$(imageTag)"
+			}
+			
+		}
+	}
+	
+	stage('Deploy to Kubernetes') {
+	  def imageTag = "$(env.BUILD_NUMBER)"
+	  
+	  script {
+	      withCredentials(sshUserPrivateKey(credentialsId: 'my-ssh-key', keyfileVariable: "KEY_FILE"]){
+		     sh 'ssh -o StrictHostKeyChecking=no -i $KEY_FILE ubuntu@ubuntu@ip-172-31-52-54 "kubectl set image deployments/deployment-2 tgilmo300=tgilmo300/cw02:'+"$(imageTag)"+'"'
+			 }
+			}
+		}
+	}  

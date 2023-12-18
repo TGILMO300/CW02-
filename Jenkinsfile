@@ -9,14 +9,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Checkout the code from your GitHub repository
-                script {
-                    git credentialsId: '57a7f0db-2417-4dfa-8e73-06423c2c097d', url: 'https://github.com/TGILMO300/CW02-'
-                }
-            }
-        }
+        
 
         stage('Build Docker Image') {
             steps {

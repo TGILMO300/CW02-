@@ -63,7 +63,7 @@ pipeline {
 
 
 
-post {
+    post {
         always {
             // Cleanup: Remove the local Docker image created during the build
             script {

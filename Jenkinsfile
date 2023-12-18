@@ -63,3 +63,12 @@ pipeline {
 
 
 
+post {
+        always {
+            // Cleanup: Remove the local Docker image created during the build
+            script {
+                docker.image("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").remove()
+            }
+        }
+    }
+}

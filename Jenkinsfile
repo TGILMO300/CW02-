@@ -13,7 +13,7 @@ pipeline {
             steps {
                 // Checkout the code from your GitHub repository
                 script {
-                    git credentialsId: 'TGILMO300', url: 'https://github.com/TGILMO300/CW02-'
+                    git credentialsId: '57a7f0db-2417-4dfa-8e73-06423c2c097d', url: 'https://github.com/TGILMO300/CW02-'
                 }
             }
         }

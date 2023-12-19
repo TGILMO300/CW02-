@@ -46,14 +46,7 @@ node {
 
     stage('Push image') {
       script {
-         def registry = 'https://registry.hub.docker.com'
-         def credentialsId = 'docker-hub-credentials'
-
-         // Fetch Docker Hub credentials from Jenkins
-         def dockerHubCredentials = credentials(credentialsId)
-
-        // Docker login using credentials
-        docker.withRegistry(registry, dockerHubCredentials) {
+         docker.withRegistry("https://registry.hub.docker.com", 'dockerHubCredentials') {
             def imageTag = "${env.BUILD_NUMBER}"
             app.push(imageTag)
             echo "Docker image pushed to tgilmo300/cw02:${imageTag}"

@@ -56,13 +56,14 @@ node {
 
 
     stage('Deploy to Kubernetes') {
-         def imageTag = "${env.BUILD_NUMBER}"
+         
+        def imageTag = "${env.BUILD_NUMBER}"
 
          script {   
               withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyfileVariable: 'KEY_FILE')]) {
                  sh 'ssh -o StrictHostKeyChecking=no -i $KEY_FILE ubuntu@ip-172-31-52-54 "kubectl set image deployments/deployment-2 tgilmo300=tgilmo300/cw02:${imageTag}"'
              }
-          }
+         }
     
-     } 
+    } 
   

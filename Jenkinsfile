@@ -21,7 +21,7 @@ node {
     }
 
     stage('Build image') { 
-        app = docker.build("tgilmour300/cw02:1.0")
+        app = docker.build("tgilmo300/cw02:1.0")
     }
 
     stage('Test image') {

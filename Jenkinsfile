@@ -43,10 +43,8 @@ node {
         }
     }
 
-    stage('Push image') {
-        script {
 
-            stage('Push image') {
+    stage('Push image') {
     script {
         def registry = 'https://registry.hub.docker.com'
         def credentialsId = 'docker-hub-credentials'

@@ -62,8 +62,8 @@ node {
         def imageTag = "${env.BUILD_NUMBER}"
 
         script {
-           withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyfileVariable: 'KEY_FILE')]) {
-              sh 'ssh -o StrictHostKeyChecking=no -i $KEY_FILE ubuntu@172-31-52-54 "kubectl set image deployments/deployment-2 tgilmo300=tgilmo300/cw02:'+"${imageTag}"+'"'
+           withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key')]) {
+              sh 'ssh -o StrictHostKeyChecking=no -i $JENKINS_HOME/credentials/ssh/my-ssh-key  ubuntu@ip-172-31-52-54 "kubectl set image deployments/deployment-2 tgilmo300=tgilmo300/cw02:'+"${imageTag}"+'"'
         }
     }
 }
